@@ -2,6 +2,7 @@
 #include "SimpleAnomalyDetector.h"
 #define NORMAL_THRESHOLD 0.9
 #define MARGIN 1.1
+// try
 
 using namespace std;
 
