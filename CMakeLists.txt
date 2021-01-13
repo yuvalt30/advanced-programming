@@ -4,7 +4,7 @@ project(ass2 VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
-add_executable(ass2 MainTrain.cpp)
+add_executable(ASS1 MainTrain.cpp)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
