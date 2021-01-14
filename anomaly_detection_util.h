@@ -4,6 +4,7 @@
 
 #include "timeseries.h"
 
+
 float avg(float* x, int size);
 
 // returns the variance of X and Y
@@ -28,8 +29,9 @@ public:
 
 class Point{
 public:
-	const float x,y;
+	float x,y;
 	Point(float x, float y):x(x),y(y){}
+	Point():x(0),y(0){}
 };
 
 // performs a linear regression and returns the line equation

@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/home/yuvalt30/advanced-programming/build",
+  "command": "/bin/g++-9    -g   -o CMakeFiles/a.out.dir/MainTrain.cpp.o -c /home/yuvalt30/advanced-programming/MainTrain.cpp",
+  "file": "/home/yuvalt30/advanced-programming/MainTrain.cpp"
+},
+{
+  "directory": "/home/yuvalt30/advanced-programming/build",
+  "command": "/bin/g++-9    -g   -o CMakeFiles/a.out.dir/anomaly_detection_util.cpp.o -c /home/yuvalt30/advanced-programming/anomaly_detection_util.cpp",
+  "file": "/home/yuvalt30/advanced-programming/anomaly_detection_util.cpp"
+},
+{
+  "directory": "/home/yuvalt30/advanced-programming/build",
+  "command": "/bin/g++-9    -g   -o CMakeFiles/a.out.dir/HybridAnomalyDetector.cpp.o -c /home/yuvalt30/advanced-programming/HybridAnomalyDetector.cpp",
+  "file": "/home/yuvalt30/advanced-programming/HybridAnomalyDetector.cpp"
+},
+{
+  "directory": "/home/yuvalt30/advanced-programming/build",
+  "command": "/bin/g++-9    -g   -o CMakeFiles/a.out.dir/minCircle.cpp.o -c /home/yuvalt30/advanced-programming/minCircle.cpp",
+  "file": "/home/yuvalt30/advanced-programming/minCircle.cpp"
+},
+{
+  "directory": "/home/yuvalt30/advanced-programming/build",
+  "command": "/bin/g++-9    -g   -o CMakeFiles/a.out.dir/SimpleAnomalyDetector.cpp.o -c /home/yuvalt30/advanced-programming/SimpleAnomalyDetector.cpp",
+  "file": "/home/yuvalt30/advanced-programming/SimpleAnomalyDetector.cpp"
+},
+{
+  "directory": "/home/yuvalt30/advanced-programming/build",
+  "command": "/bin/g++-9    -g   -o CMakeFiles/a.out.dir/timeseries.cpp.o -c /home/yuvalt30/advanced-programming/timeseries.cpp",
+  "file": "/home/yuvalt30/advanced-programming/timeseries.cpp"
+}
+]

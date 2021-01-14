@@ -26,6 +26,7 @@ public:
 	Point center;
 	float radius;
 	Circle(Point c,float r):center(c),radius(r){}
+	Circle(float x, float y, float r):center(Point(x,y)),radius(r){}
 };
 // --------------------------------------
 
@@ -33,14 +34,20 @@ public:
 
 float dist(Point a, Point b);
 
-Circle from2points(Point a,Point b);
+bool isInCircle(const Circle& c, const Point& p) ;
 
-Point circumcenter(Point b, Point c);
+bool isValidCircle(const Circle& c, const vector<Point>& P) ;
 
-Circle from3Points(Point a, Point b, Point c);
+Circle circleFrom3P(const Point& A, const Point& B, const Point& C) ;
 
-Circle trivial(vector<Point>& P);
+Circle minCircleFrom2P(const Point& A, const Point& B) ;
 
-Circle welzl(Point** P,vector<Point> R, size_t n);Circle findMinCircle(Point** points,size_t size);
+Circle minCircleTrivial(vector<Point>& P) ;
+
+Point calcCircleCenter(float bx, float by, float cx, float cy);
+
+Circle welzl(Point** P,vector<Point> R, size_t n);
+
+Circle findMinCircle(Point** points,size_t size);
 
 #endif /* MINCIRCLE_H_ */

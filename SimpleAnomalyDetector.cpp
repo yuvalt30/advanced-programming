@@ -1,27 +1,36 @@
 
 #include "SimpleAnomalyDetector.h"
-#define NORMAL_THRESHOLD 0.9
 #define MARGIN 1.1
 
 using namespace std;
 
-SimpleAnomalyDetector::SimpleAnomalyDetector() {
-	// TODO Auto-generated constructor stub
-
-}
+SimpleAnomalyDetector::SimpleAnomalyDetector(){normal_threshold=0.9;}
 
 SimpleAnomalyDetector::~SimpleAnomalyDetector() {
 	// TODO Auto-generated destructor stub
 }
 
+Point** SimpleAnomalyDetector::toPoints(vector<float> x, vector<float> y){
+	Point** ps=new Point*[x.size()];
+	for(size_t i=0;i<x.size();i++){
+		ps[i]=new Point(x[i],y[i]);
+	}
+	return ps;
+}
+
+// methods ruteuns correlation between features i and j
 float calcFeaturesCorrelation(const TimeSeries &ts, int i, int j) {
+	// get vector of feature i
 	vector<float> v1 = ts.getFeatureVecByIdx(i);
+	// get vector of feature i
 	vector<float> v2 = ts.getFeatureVecByIdx(j);
 	float* x = v1.data();
 	float* y = v2.data();
 	return abs(pearson(x, y, ts.getEntriesNum()));
 }
 
+// checks for every feature j if J-I correlation is bigger than given correlation
+// (where i is the 2nd feature)
 bool isMaxCorelForFeature(string feature, float correlation, vector<correlatedFeatures> cfVec) {
 	for(int i = 0; i < cfVec.size(); i++) {
 		if(cfVec[i].feature2 == feature && cfVec[i].corrlation >= correlation) {
@@ -31,18 +40,9 @@ bool isMaxCorelForFeature(string feature, float correlation, vector<correlatedFe
 	return true;
 }
 
-float set_liner_reg_and_threshold(const TimeSeries& ts, correlatedFeatures& correlf) {
-	// set liner regression line
-	Point* parray[ts.getEntriesNum()];
-	vector<float> v1 = ts.getMap()[correlf.feature1];
-	vector<float> v2 = ts.getMap()[correlf.feature2];
-	for (int i = 0; i < ts.getEntriesNum(); i++) {
-		parray[i] = new Point(v1[i], v2[i]);
-	}
-	Line reg = linear_reg(parray, ts.getEntriesNum());
-	correlf.lin_reg = reg;
-
-	// set threshold as max{dev(p in points, linear_reg)}
+// set threshold as max{dev(p in points, linear_reg)} -
+// max deviation of all points from linerreg line
+float findThreshold(Point** parray, Line reg, TimeSeries ts) {
 	float threshold = 0;
 	for (int i = 0; i < ts.getEntriesNum(); i++) {
 		float temp_thres = dev(*parray[i], reg);
@@ -51,38 +51,81 @@ float set_liner_reg_and_threshold(const TimeSeries& ts, correlatedFeatures& corr
 		}
 		delete(parray[i]);
 	}
-	return threshold *= MARGIN;
+	return threshold;
+}
+
+
+// input is  timeseries and a correlation of 2 features,
+// method sets linearreg line and max deviation (threshold) of all points from linearreg line
+void SimpleAnomalyDetector::set_liner_reg_and_threshold(const TimeSeries& ts, correlatedFeatures& correlf) {
+	// set liner regression line
+	// points array in size of timeseries' entries (rows - 1)
+	Point* parray[ts.getEntriesNum()];
+	// get features' vectors
+	vector<float> v1 = ts.getMap()[correlf.feature1];
+	vector<float> v2 = ts.getMap()[correlf.feature2];
+	// init point array, each point represent (f1,f2) at given time
+	for (int i = 0; i < ts.getEntriesNum(); i++) {
+		parray[i] = new Point(v1[i], v2[i]);
+	}
+	// if 2 features correlation is above normal_threshold,
+	// anomaly check by max deviation from linearreg Line
+	// otherwise (0.5 < correl < normal_threshold),
+	// anomaly can be checked by MEC
+	if(correlf.corrlation > normal_threshold) {
+		Line reg = linear_reg(parray, ts.getEntriesNum());
+		correlf.lin_reg = reg;
+		correlf.threshold = findThreshold(parray, reg, ts) * MARGIN; // * 110%
+	} else {
+		Circle MEC = findMinCircle(parray, ts.getEntriesNum());
+		correlf.MEC_center = MEC.center;
+		correlf.threshold = MEC.radius;
+	}
 }
 
 void SimpleAnomalyDetector::learnNormal(const TimeSeries& ts){
 	correlatedFeatures correlf;
+	// for every feature i
 	for(int i = 0; i < ts.features.size(); i++) {
+		// init feature i (max)correlation with any other feature to be 0
 		correlf.feature1 = ts.features[i];
 		correlf.corrlation = 0;
+		// check correlation with feature j (j > i, upper triangular matrix)
 		for (int j = i + 1; j < ts.features.size(); j++) {
-			if (calcFeaturesCorrelation(ts, i, j) > correlf.corrlation 
-				&& calcFeaturesCorrelation(ts, i, j) > NORMAL_THRESHOLD) {
+			// if i correlate with j more than any previous j,
+			// AND i,j correlation is above minimum threshold, update correlf
+			float correlIJ = calcFeaturesCorrelation(ts, i, j); 
+			if (correlIJ > correlf.corrlation && correlIJ > minimal_correl /* =0.5 */) {
 				correlf.corrlation = calcFeaturesCorrelation(ts, i, j);
 				correlf.feature2 = ts.features[j];
-				correlf.threshold = set_liner_reg_and_threshold(ts, correlf);
+				set_liner_reg_and_threshold(ts, correlf);
 			}
 		}
-		if(isMaxCorelForFeature(correlf.feature1, correlf.corrlation, this->cf)) {
-			this->cf.push_back(correlf);
-		}
+		// check for lower triangular matrix
+		//if(isMaxCorelForFeature(correlf.feature1, correlf.corrlation, this->cf)) {
+		//	this->cf.push_back(correlf);
+		//}
 	}
 }
 
+bool SimpleAnomalyDetector::isAnomalous(float x, float y, correlatedFeatures c) {
+	return abs(y - c.lin_reg.f(x))>normal_threshold;
+}
+
 vector<AnomalyReport> SimpleAnomalyDetector::detect(const TimeSeries& ts){
-	vector<AnomalyReport> arVec;
-	int correlNum = this->cf.size();
+	vector<AnomalyReport> arVec;	// vector of AnomalyReport s
+	int correlNum = this->cf.size();	// number of correlations found (above normal threshold)
+	// for every row in TimeSeries
 	for (int i = 0; i < ts.getEntriesNum(); i++) {
+		// for every correl of 2 features in this.cf
+		// check if in row i in TS 2 features of cf[j]
+		// are deviated from their linearreg more then allowed (in cf[j].threshold)
 		for (int j = 0; j < correlNum; j++) {
 			struct correlatedFeatures temp = this->cf[j];
 			float x = ts.getMap()[temp.feature1][i];
 			float y = ts.getMap()[temp.feature2][i];
-			Point p(x,y);
-			if (dev(p, temp.lin_reg) > temp.threshold) {
+			// if 2 features deviated more than allowed - report anomaly between them in i+1 timestep
+			if (isAnomalous(x,y,temp)) {
 				arVec.push_back(AnomalyReport(string(temp.feature1+"-"+temp.feature2), i + 1));
 			}
 		}

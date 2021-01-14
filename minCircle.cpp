@@ -1,20 +1,19 @@
 // 311127120
 #include "minCircle.h"
-using namespace std;
 
 // ------------ DO NOT CHANGE -----------
-class Point{
-public:
-	float x,y;
-	Point(float x,float y):x(x),y(y){}
-};
+// class Point{
+// public:
+// 	float x,y;
+// 	Point(float x,float y):x(x),y(y){}
+// };
 
-class Circle{
-public:
-	Point center;
-	float radius;
-	Circle(Point c,float r):center(c),radius(r){}
-};
+// class Circle{
+// public:
+// 	Point center;
+// 	float radius;
+// 	Circle(Point c,float r):center(c),radius(r){}
+// };
 // --------------------------------------
 
   
@@ -32,7 +31,7 @@ Point calcCircleCenter(float bx, float by, float cx, float cy)
   
 
 // returns distance between two points 
-float dist(const Point& a, const Point& b) 
+float dist(Point a, Point b) 
 { 
     return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2)); 
 } 
@@ -55,7 +54,7 @@ bool isValidCircle(const Circle& c, const vector<Point>& P)
 
 
 // returns a unique circle that intersects three points 
-Circle circleFrom3P(const Point& A, const Point& B, const Point& C) 
+Circle circleFrom3P(const Point &A, const Point &B, const Point &C) 
 { 
     Point center = calcCircleCenter(B.x - A.x, B.y - A.y, C.x - A.x, C.y - A.y); 
   
@@ -101,7 +100,7 @@ Circle minCircleTrivial(vector<Point>& P)
 } 
   
 // Returns min enclosing circle applying Welzl algorithm
-Circle aux(vector<Point>& P, vector<Point> R, int n) 
+Circle welzl(vector<Point>& P, vector<Point> R, int n) 
 { 
     // base case
     if (n == 0 || R.size() == 3) { 
@@ -116,7 +115,7 @@ Circle aux(vector<Point>& P, vector<Point> R, int n)
   
     // Get the MEC circle circ from the 
     // set of points P without p 
-    Circle circ = aux(P, R, n - 1); 
+    Circle circ = welzl(P, R, n - 1); 
   
     // If circ contains p, return circ 
     if (isInCircle(circ, p)) { 
@@ -127,18 +126,19 @@ Circle aux(vector<Point>& P, vector<Point> R, int n)
     R.push_back(p); 
   
     // Return the MEC for P - {p} and R U {p} 
-    return aux(P, R, n - 1); 
+    return welzl(P, R, n - 1); 
 } 
   
 Circle welzlsAlgoMEC(const vector<Point>& P) 
 { 
     vector<Point> temp = P; 
     random_shuffle(temp.begin(), temp.end()); 
-    return aux(temp, {}, temp.size()); 
+    return welzl(temp, {}, temp.size()); 
 } 
 
 
-Circle findMinCircle(Point** points, size_t size){
+Circle findMinCircle(Point** points, size_t size)
+{
 	vector<Point> pointsVec;
 	for (int i = 0; i < size; i++) {
 		pointsVec.push_back(*(points[i]));
