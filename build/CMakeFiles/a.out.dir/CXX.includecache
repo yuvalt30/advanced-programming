@@ -16,15 +16,27 @@ timeseries.h
 math.h
 /home/yuvalt30/advanced-programming/math.h
 
-/home/yuvalt30/advanced-programming/HybridAnomalyDetector.cpp
-HybridAnomalyDetector.h
-/home/yuvalt30/advanced-programming/HybridAnomalyDetector.h
-
 /home/yuvalt30/advanced-programming/HybridAnomalyDetector.h
 SimpleAnomalyDetector.h
 /home/yuvalt30/advanced-programming/SimpleAnomalyDetector.h
 minCircle.h
 /home/yuvalt30/advanced-programming/minCircle.h
+
+/home/yuvalt30/advanced-programming/MainTrain.cpp
+iostream
+-
+vector
+-
+HybridAnomalyDetector.h
+/home/yuvalt30/advanced-programming/HybridAnomalyDetector.h
+fstream
+-
+stdlib.h
+-
+time.h
+-
+math.h
+-
 
 /home/yuvalt30/advanced-programming/SimpleAnomalyDetector.h
 anomaly_detection_util.h

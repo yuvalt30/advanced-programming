@@ -143,6 +143,7 @@ Circle findMinCircle(Point** points, size_t size)
 	for (int i = 0; i < size; i++) {
 		pointsVec.push_back(*(points[i]));
 	}
-	return welzlsAlgoMEC(pointsVec);
+	Circle c = welzlsAlgoMEC(pointsVec);
+    return c;
 }
 

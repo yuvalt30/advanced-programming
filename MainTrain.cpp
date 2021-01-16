@@ -1,7 +1,7 @@
 /*
  * MainTrain.cpp
  *
- *  Created on: 11 баечЧ 2020
+ *  Created on: 11 пїЅпїЅпїЅпїЅпїЅ 2020
  *      Author: Eli
  */
 
@@ -112,7 +112,7 @@ int main(){
 	vector<correlatedFeatures> cf=ad.getNormalModel();
 
 	if(cf.size()!=3)
-		cout<<"wrong size of correlated features (-40)"<<endl;
+		cout<<cf.size()<<"wrong size of correlated features (-40)"<<endl;
 	else
 	for_each(cf.begin(),cf.end(),[&a1,&b1,&a2,&b2,&a3,&b3](correlatedFeatures c){
 		checkCorrelation(c,"A","B",a1,b1); // 10 points
